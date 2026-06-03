@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ahmer Ayaz | Penetration Tester</title>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --bg2:      #161b22;
+      --bg3:      #21262d;
+      --green:    #00ff88;
+      --green2:   #00cc6a;
+      --red:      #ff4444;
+      --orange:   #ff8c00;
+      --yellow:   #ffd700;
+      --blue:     #58a6ff;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --border:   #30363d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: rgba(13,17,23,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 40px;
+    }
+    .nav-logo {
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: .9rem; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .btn-hire {
+      background: var(--green); color: #000;
+      padding: 8px 20px; border-radius: 6px;
+      font-weight: 700; font-size: .85rem;
+      text-decoration: none; transition: background .2s;
+    }
+    .btn-hire:hover { background: var(--green2); color: #000; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 100px 40px 60px;
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(0,255,136,.06) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(88,166,255,.05) 0%, transparent 50%);
+    }
+    .hero-inner {
+      max-width: 900px; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .hero-text .label {
+      font-family: 'Courier New', monospace;
+      color: var(--green); font-size: .85rem;
+      letter-spacing: 2px; margin-bottom: 12px;
+    }
+    .hero-text h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .hero-text h1 span { color: var(--green); }
+    .hero-text p {
+      color: var(--muted); font-size: 1rem;
+      margin-bottom: 32px; max-width: 420px;
+    }
+    .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--green); color: #000;
+      padding: 12px 28px; border-radius: 8px;
+      font-weight: 700; text-decoration: none;
+      transition: transform .15s, background .2s;
+    }
+    .btn-primary:hover { background: var(--green2); transform: translateY(-1px); }
+    .btn-secondary {
+      border: 1px solid var(--border); color: var(--text);
+      padding: 12px 28px; border-radius: 8px;
+      text-decoration: none; transition: border-color .2s;
+    }
+    .btn-secondary:hover { border-color: var(--green); color: var(--green); }
+
+    /* Terminal window */
+    .terminal {
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+    .terminal-bar {
+      background: var(--bg3);
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .terminal-title {
+      font-size: .75rem; color: var(--muted);
+      margin-left: 8px; font-family: 'Courier New', monospace;
+    }
+    .terminal-body {
+      padding: 18px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: .78rem; line-height: 1.7;
+    }
+    .t-prompt { color: var(--green); }
+    .t-cmd    { color: var(--text); }
+    .t-info   { color: var(--blue); }
+    .t-ok     { color: var(--green); }
+    .t-warn   { color: var(--orange); }
+    .t-crit   { color: var(--red); }
+    .t-muted  { color: var(--muted); }
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── SECTIONS ── */
+    section { padding: 80px 40px; }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .section-label {
+      font-family: 'Courier New', monospace;
+      color: var(--green); font-size: .8rem;
+      letter-spacing: 2px; margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800; margin-bottom: 14px;
+    }
+    .section-sub {
+      color: var(--muted); max-width: 580px; margin-bottom: 48px;
+    }
+    .divider {
+      border: none; border-top: 1px solid var(--border);
+    }
+
+    /* ── TOOL SECTION ── */
+    #tool { background: var(--bg2); }
+    .tool-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: center;
+    }
+    .tool-features { display: flex; flex-direction: column; gap: 20px; }
+    .feature {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 18px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 8px;
+      transition: border-color .2s;
+    }
+    .feature:hover { border-color: var(--green); }
+    .feature-icon {
+      width: 38px; height: 38px; border-radius: 8px;
+      background: rgba(0,255,136,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+      color: var(--green); font-family: 'Courier New', monospace;
+      font-weight: 700;
+    }
+    .feature h4 { font-size: .9rem; margin-bottom: 3px; }
+    .feature p  { font-size: .8rem; color: var(--muted); }
+
+    /* ── FINDINGS SHOWCASE ── */
+    #findings { background: var(--bg); }
+    .findings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .finding-card {
+      border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .finding-header {
+      padding: 10px 14px;
+      font-family: 'Courier New', monospace;
+      font-size: .8rem; font-weight: 700;
+      color: #fff;
+    }
+    .finding-body {
+      padding: 14px; background: var(--bg2);
+      font-size: .82rem;
+    }
+    .finding-body .title { font-weight: 600; margin-bottom: 5px; }
+    .finding-body .desc  { color: var(--muted); font-size: .78rem; margin-bottom: 10px; }
+    .finding-body .cvss  {
+      display: inline-block;
+      font-family: 'Courier New', monospace;
+      font-size: .72rem; background: var(--bg3);
+      padding: 2px 8px; border-radius: 4px; color: var(--muted);
+    }
+    .sev-critical .finding-header { background: #7f1d1d; }
+    .sev-high     .finding-header { background: #7c2d12; }
+    .sev-medium   .finding-header { background: #713f12; }
+    .sev-low      .finding-header { background: #1e3a5f; }
+
+    /* ── REPORT SECTION ── */
+    #report { background: var(--bg2); }
+    .report-showcase {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+    }
+    .report-pages { display: flex; flex-direction: column; gap: 12px; }
+    .report-page {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px 20px;
+      display: flex; align-items: center; gap: 16px;
+      transition: border-color .2s;
+    }
+    .report-page:hover { border-color: var(--green); }
+    .page-num {
+      width: 32px; height: 32px; border-radius: 6px;
+      background: rgba(0,255,136,.1); color: var(--green);
+      font-family: 'Courier New', monospace; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; flex-shrink: 0;
+    }
+    .page-info h4 { font-size: .88rem; margin-bottom: 2px; }
+    .page-info p  { font-size: .76rem; color: var(--muted); }
+    .report-cta { display: flex; flex-direction: column; gap: 20px; }
+    .report-cta h3 { font-size: 1.5rem; font-weight: 700; }
+    .report-cta p  { color: var(--muted); font-size: .9rem; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px 40px;
+      display: flex; justify-content: space-around;
+      flex-wrap: wrap; gap: 24px; margin-bottom: 60px;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 800;
+      color: var(--green); font-family: 'Courier New', monospace;
+      display: block;
+    }
+    .stat-label { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── SKILLS ── */
+    #skills { background: var(--bg); }
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .skill-group {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 20px;
+    }
+    .skill-group h4 {
+      font-family: 'Courier New', monospace; font-size: .8rem;
+      color: var(--green); margin-bottom: 12px; letter-spacing: 1px;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--muted); font-size: .75rem;
+      padding: 4px 10px; border-radius: 20px;
+    }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--bg2); }
+    .contact-box {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px; padding: 48px;
+      text-align: center; max-width: 600px; margin: 0 auto;
+    }
+    .contact-box h3 {
+      font-size: 1.8rem; font-weight: 800; margin-bottom: 12px;
+    }
+    .contact-box p {
+      color: var(--muted); margin-bottom: 32px;
+    }
+    .contact-links { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .contact-link {
+      display: flex; align-items: center; gap: 8px;
+      padding: 11px 22px; border-radius: 8px;
+      border: 1px solid var(--border); color: var(--text);
+      text-decoration: none; font-size: .88rem;
+      transition: border-color .2s, color .2s;
+    }
+    .contact-link:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 24px;
+      border-top: 1px solid var(--border);
+      font-size: .78rem; color: var(--muted);
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      .nav-links a { display: none; }
+      #hero { padding: 90px 20px 40px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 32px; }
+      .tool-grid, .report-showcase { grid-template-columns: 1fr; }
+      section { padding: 60px 20px; }
+      .stats-bar { padding: 24px 20px; }
+      .contact-box { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#">AutoPwn</a>
+  <div class="nav-links">
+    <a href="#tool">Tool</a>
+    <a href="#findings">Findings</a>
+    <a href="#report">Report</a>
+    <a href="#skills">Skills</a>
+    <a class="btn-hire" href="#contact">Hire Me</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1>I find your <span>vulnerabilities</span> before attackers do.</h1>
+      <p>
+        Automated web penetration testing, CVSSv3-scored findings, and
+        professional PDF reports, delivered in under 90 seconds.
+      </p>
+      <div class="hero-cta">
+        <a class="btn-primary" href="#contact">Hire Me</a>
+        <a class="btn-secondary" href="https://github.com/YOUR_USERNAME/autopwn" target="_blank">View on GitHub</a>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="terminal-title">autopwn</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-prompt">$ </span><span class="t-cmd">python autopwn.py https://target.com</span></div>
+        <div class="t-muted">─────────────────────────────────────</div>
+        <div><span class="t-info">[*] Target     : https://target.com</span></div>
+        <div><span class="t-info">[*] Modules    : 5 running in parallel</span></div>
+        <div class="t-muted">─────────────────────────────────────</div>
+        <div><span class="t-ok">[+] Recon      : 3 findings</span></div>
+        <div><span class="t-ok">[+] PortScan   : 2 findings</span></div>
+        <div><span class="t-warn">[+] WebScan    : 4 findings</span></div>
+        <div><span class="t-warn">[+] Headers    : 6 findings</span></div>
+        <div><span class="t-crit">[+] SSL/TLS    : 2 findings</span></div>
+        <div class="t-muted">─────────────────────────────────────</div>
+        <div><span class="t-crit">Overall Risk   : HIGH</span></div>
+        <div><span class="t-ok">[+] Report     : report_target.pdf</span></div>
+        <div><span class="t-prompt">$ </span><span class="blink">_</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── TOOL ── -->
+<section id="tool">
+  <div class="section-inner">
+    <h2 class="section-title">AutoPwn</h2>
+    <p class="section-sub">
+      A custom-built Python tool that runs 5 security modules in parallel,
+      aggregates every finding, scores it by CVSSv3 severity, and generates
+      a professional PDF report, all from a single URL.
+    </p>
+
+    <div class="tool-grid">
+      <div class="tool-features">
+        <div class="feature">
+          <div class="feature-icon">01</div>
+          <div>
+            <h4>Reconnaissance</h4>
+            <p>DNS enumeration, WHOIS lookup, zone-transfer vulnerability check, reverse DNS.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">02</div>
+          <div>
+            <h4>Port Scanning</h4>
+            <p>Nmap-powered scan of top 1000 ports. Flags RDP, SMB, Redis, MongoDB and 16 other high-risk services.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">03</div>
+          <div>
+            <h4>Web Vulnerability Scan</h4>
+            <p>Tests for SQL injection, open redirects, exposed .env / .git files, admin panels, and 25+ sensitive paths.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">04</div>
+          <div>
+            <h4>HTTP Header Audit</h4>
+            <p>Checks for HSTS, CSP, X-Frame-Options, X-Content-Type-Options and server technology disclosure.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">05</div>
+          <div>
+            <h4>SSL / TLS Inspection</h4>
+            <p>Certificate expiry, self-signed detection, deprecated TLS 1.0/1.1 protocol support.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <span class="terminal-title">scan results</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-muted">============================================</div>
+          <div class="t-ok">  SCAN RESULTS SUMMARY</div>
+          <div class="t-muted">============================================</div>
+          <div>  Total Findings  : <span class="t-ok">17</span></div>
+          <div>  Vulnerabilities : <span class="t-warn">10</span></div>
+          <div>  Critical        : <span class="t-crit">0</span></div>
+          <div>  High            : <span class="t-crit">2</span></div>
+          <div>  Medium          : <span class="t-warn">3</span></div>
+          <div>  Low             : <span class="t-info">5</span></div>
+          <div>  Info            : <span class="t-muted">7</span></div>
+          <div class="t-muted">────────────────────────────────────────────</div>
+          <div>  Overall Risk    : <span class="t-crit">HIGH</span></div>
+          <div>  Scan Duration   : <span class="t-ok">80s</span></div>
+          <div class="t-muted">============================================</div>
+          <div class="t-ok">[+] PDF Report saved.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── FINDINGS ── -->
+<section id="findings">
+  <div class="section-inner">
+    <h2 class="section-title">What I Find in Your Website</h2>
+    <p class="section-sub">
+      Every finding is scored by CVSSv3 severity, the same standard used by the
+      National Vulnerability Database.
+    </p>
+
+    <div class="findings-grid">
+      <div class="finding-card sev-critical">
+        <div class="finding-header">CRITICAL | CVSSv3: 9.8</div>
+        <div class="finding-body">
+          <div class="title">SQL Injection Detected</div>
+          <div class="desc">Attacker can read, modify or delete your entire database without credentials.</div>
+          <span class="cvss">Module: webscan</span>
+        </div>
+      </div>
+      <div class="finding-card sev-critical">
+        <div class="finding-header">CRITICAL | CVSSv3: 9.8</div>
+        <div class="finding-body">
+          <div class="title">SMB Port 445 Exposed</div>
+          <div class="desc">Vulnerable to EternalBlue / WannaCry class attacks from the internet.</div>
+          <span class="cvss">Module: portscan</span>
+        </div>
+      </div>
+      <div class="finding-card sev-critical">
+        <div class="finding-header">CRITICAL | CVSSv3: 9.1</div>
+        <div class="finding-body">
+          <div class="title">Git Repository Exposed</div>
+          <div class="desc">Source code and credentials publicly downloadable via /.git/HEAD.</div>
+          <span class="cvss">Module: webscan</span>
+        </div>
+      </div>
+      <div class="finding-card sev-high">
+        <div class="finding-header">HIGH | CVSSv3: 7.4</div>
+        <div class="finding-body">
+          <div class="title">HSTS Header Missing</div>
+          <div class="desc">Enables protocol-downgrade attacks and session cookie hijacking.</div>
+          <span class="cvss">Module: headers</span>
+        </div>
+      </div>
+      <div class="finding-card sev-high">
+        <div class="finding-header">HIGH | CVSSv3: 7.5</div>
+        <div class="finding-body">
+          <div class="title">SSL Certificate Expiring in 12 Days</div>
+          <div class="desc">Certificate will expire soon, causing browser warnings and broken HTTPS.</div>
+          <span class="cvss">Module: ssl</span>
+        </div>
+      </div>
+      <div class="finding-card sev-medium">
+        <div class="finding-header">MEDIUM | CVSSv3: 6.1</div>
+        <div class="finding-body">
+          <div class="title">Content-Security-Policy Missing</div>
+          <div class="desc">No CSP header, significantly increases the impact of XSS attacks.</div>
+          <span class="cvss">Module: headers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── REPORT ── -->
+<section id="report">
+  <div class="section-inner">
+    <h2 class="section-title">Professional PDF Report</h2>
+    <p class="section-sub">
+      Every scan produces a boardroom-ready PDF. Not a raw log dump, a structured,
+      readable report your team can act on immediately.
+    </p>
+
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-num">5</span><div class="stat-label">Parallel Modules</div></div>
+      <div class="stat"><span class="stat-num">&lt; 90s</span><div class="stat-label">Scan Time</div></div>
+      <div class="stat"><span class="stat-num">25+</span><div class="stat-label">Vulnerability Checks</div></div>
+      <div class="stat"><span class="stat-num">CVSSv3</span><div class="stat-label">Severity Scoring</div></div>
+    </div>
+
+    <div class="report-showcase">
+      <div class="report-pages">
+        <div class="report-page">
+          <div class="page-num">01</div>
+          <div class="page-info">
+            <h4>Cover Page</h4>
+            <p>Target URL, scan date, overall risk rating badge</p>
+          </div>
+        </div>
+        <div class="report-page">
+          <div class="page-num">02</div>
+          <div class="page-info">
+            <h4>Executive Summary</h4>
+            <p>Severity breakdown, what the board needs to see</p>
+          </div>
+        </div>
+        <div class="report-page">
+          <div class="page-num">03</div>
+          <div class="page-info">
+            <h4>Scan Statistics</h4>
+            <p>Findings by module, full findings index with CVSS scores</p>
+          </div>
+        </div>
+        <div class="report-page">
+          <div class="page-num">04</div>
+          <div class="page-info">
+            <h4>Detailed Findings</h4>
+            <p>Evidence, description and remediation for every vulnerability</p>
+          </div>
+        </div>
+        <div class="report-page">
+          <div class="page-num">05</div>
+          <div class="page-info">
+            <h4>Remediation Summary</h4>
+            <p>Prioritised action table. Fix Critical first, then High, Medium, Low</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-cta">
+        <h3>One URL.<br/>Complete security picture.</h3>
+        <p>
+          No manual setup. No configuration. Drop in a URL, get a PDF report
+          with every vulnerability scored, evidenced, and ready to fix.
+        </p>
+        <a class="btn-primary" href="mailto:ahmerayaz2000@gmail.com?subject=Security Audit Request">Request a Free Scan</a>
+        <a class="btn-secondary" href="https://github.com/YOUR_USERNAME/autopwn" target="_blank">View Source on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── SKILLS ── -->
+<section id="skills">
+  <div class="section-inner">
+    <h2 class="section-title">Technical Stack</h2>
+    <p class="section-sub">Tools and technologies I use to find and report vulnerabilities.</p>
+
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h4>LANGUAGES</h4>
+        <div class="skill-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Bash</span>
+          <span class="tag">SQL</span>
+          <span class="tag">JavaScript</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4>PENTEST TOOLS</h4>
+        <div class="skill-tags">
+          <span class="tag">Nmap</span>
+          <span class="tag">Burp Suite</span>
+          <span class="tag">Metasploit</span>
+          <span class="tag">Wireshark</span>
+          <span class="tag">OWASP ZAP</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4>WEB SECURITY</h4>
+        <div class="skill-tags">
+          <span class="tag">OWASP Top 10</span>
+          <span class="tag">SQLi</span>
+          <span class="tag">XSS</span>
+          <span class="tag">CSRF</span>
+          <span class="tag">SSRF</span>
+          <span class="tag">CVSSv3</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4>PYTHON LIBS</h4>
+        <div class="skill-tags">
+          <span class="tag">asyncio</span>
+          <span class="tag">aiohttp</span>
+          <span class="tag">python-nmap</span>
+          <span class="tag">cryptography</span>
+          <span class="tag">dnspython</span>
+          <span class="tag">ReportLab</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="contact-box">
+      <h3>Ready to secure<br/>your business?</h3>
+      <p>
+        Send me your domain. I'll run a free scan and show you exactly
+        what attackers can see right now, no commitment required.
+      </p>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:ahmerayaz2000@gmail.com">
+          ahmerayaz2000@gmail.com
+        </a>
+        <a class="contact-link" href="https://github.com/YOUR_USERNAME/autopwn" target="_blank">
+          GitHub
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank">
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Ahmer Ayaz &nbsp;|&nbsp; Penetration Tester &nbsp;|&nbsp;
+  For authorized security testing only.
+</footer>
+
+</body>
+</html>
