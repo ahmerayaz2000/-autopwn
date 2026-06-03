@@ -2,7 +2,7 @@
 
 > Give it a URL. Get a full security report in under 90 seconds.
 
-AutoPwn runs **5 security modules in parallel**, scores every finding by **CVSSv3 severity**, and generates a **professional PDF report** — with zero human intervention after the URL is entered.
+AutoPwn runs **5 security modules in parallel**, scores every finding by **CVSSv3 severity**, and generates a **professional PDF report**  with zero human intervention after the URL is entered.
 
 ---
 
